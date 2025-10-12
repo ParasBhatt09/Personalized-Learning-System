@@ -524,10 +524,11 @@ button[type="submit"]:hover {
     <div class="logo">
       <img src="https://cdn-icons-png.flaticon.com/512/1048/1048943.png" alt="Logo" />
       <h2>LearnHub</h2>
-      <h2 class="username">Welcome  <%= name %></h2> 
+     <h1>Welcome <%= typeof name !== 'undefined' ? name : '' %></h1>
+ 
     </div>
     <nav>
-      <a href="#" id="nav-courses">Courses</a>
+      <a href="/course" id="nav-courses">Courses</a>
       <a href="#" id="nav-learning">My Learning</a>
       <a href="#" id="nav-about">About</a>
       <a href="/login" class="login" id="login-btn">Login</a>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Select Courses</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5fa; margin: 0; }
+    .container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #ccc; padding: 30px; }
+    h2 { text-align: center; color: #7e57c2; }
+    .courses-list label { display: block; margin-bottom: 12px; font-size: 1.1em; }
+    .btn-group { text-align: center; margin-top: 20px; }
+    button { padding: 10px 20px; border: none; border-radius: 5px; margin: 0 8px; font-size: 1em; cursor: pointer; }
+    .primary { background: #7e57c2; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Select Your Courses</h2>
+    <form action="/save-courses" method="POST">
+      <!-- hidden field to identify user -->
+      <input type="hidden" name="email" value="<%= email || '' %>">
+
+      <div class="courses-list">
+        <label><input type="checkbox" name="subjects" value="Mathematics"> Mathematics</label>
+        <label><input type="checkbox" name="subjects" value="Science"> Science</label>
+        <label><input type="checkbox" name="subjects" value="English"> English</label>
+        <label><input type="checkbox" name="subjects" value="Social Studies"> Social Studies</label>
+        <label><input type="checkbox" name="subjects" value="Computer Science"> Computer Science</label>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit" class="primary">Save Subjects</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
