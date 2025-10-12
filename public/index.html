@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LearnHub - Learn Smarter, Achieve More</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/1048/1048943.png" alt="Logo" />
+      <h2>LearnHub</h2>
+    </div>
+    <nav>
+      <a href="#" id="nav-courses">Courses</a>
+      <a href="#" id="nav-learning">My Learning</a>
+      <a href="#" id="nav-about">About</a>
+      <a href="/login" class="login" id="login-btn">Login</a>
+       <a href="/signup" class="signup" id="login-btn">signup</a>
+    </nav>
+  </header>
+  <main id="main-content">
+    <div id="full-main">
+      <section class="hero" id="hero-section">
+        <div class="hero-text">
+          <button class="tagline">Transform Your Learning Journey</button>
+          <h1>Learn Smarter, <span>Achieve More</span></h1>
+          <p>Join thousands of students from grades 1–12 in mastering core subjects through interactive lessons.</p>
+          <div class="buttons">
+            <button class="primary explore-courses-btn">Explore Courses →</button>
+            <button class="secondary">Learn More</button>
+          </div>
+          <div class="students-card">
+            <p><strong>1000+ Students</strong><br>Enrolled This Month</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="container" id="grade-cards-main">
+        <div class="card">
+          <div class="card-icon purple">🎓</div>
+          <h3>Grade 1-3</h3>
+          <p>Primary</p>
+          <button class="choose-grade-btn" data-grade="1-3">Explore Courses →</button>
+        </div>
+        <div class="card">
+          <div class="card-icon blue">🎓</div>
+          <h3>Grade 4-6</h3>
+          <p>Elementary</p>
+          <button class="choose-grade-btn" data-grade="4-6">Explore Courses →</button>
+        </div>
+        <div class="card">
+          <div class="card-icon orange">🎓</div>
+          <h3>Grade 7-9</h3>
+          <p>Middle School</p>
+          <button class="choose-grade-btn" data-grade="7-9">Explore Courses →</button>
+        </div>
+        <div class="card">
+          <div class="card-icon violet">🎓</div>
+          <h3>Grade 10-12</h3>
+          <p>High School</p>
+          <button class="choose-grade-btn" data-grade="10-12">Explore Courses →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grade Selection Page -->
+    <section id="grade-selection-page" style="display:none;">
+      <button id="back-to-full-main" class="back-button">← Back</button>
+      <div class="container">
+        <div class="grade">
+          <h1>Choose Your <span>Grade Level</span></h1>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="card">
+          <div class="card-icon purple">🎓</div>
+          <h3>Grade 1-3</h3>
+          <button class="select-grade" data-grade="1-3">Select →</button>
+        </div>
+        <div class="card">
+          <div class="card-icon blue">🎓</div>
+          <h3>Grade 4-6</h3>
+          <button class="select-grade" data-grade="4-6">Select →</button>
+        </div>
+        <div class="card">
+          <div class="card-icon orange">🎓</div>
+          <h3>Grade 7-9</h3>
+          <button class="select-grade" data-grade="7-9">Select →</button>
+        </div>
+        <div class="card">
+          <div class="card-icon violet">🎓</div>
+          <h3>Grade 10-12</h3>
+          <button class="select-grade" data-grade="10-12">Select →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subject Selection Page -->
+    <section id="subject-selection-page" style="display:none;">
+      <button id="back-to-grades" class="back-button">← Back</button>
+      <div class="container">
+        <div class="grade">
+          <h1>Select Your <span>Subjects</span></h1>
+        </div>
+      </div>
+
+      <form id="subject-form" class="container subjects-container">
+        <label><input type="checkbox" name="subject" value="Mathematics"> Mathematics</label>
+        <label><input type="checkbox" name="subject" value="Science"> Science</label>
+        <label><input type="checkbox" name="subject" value="English"> English</label>
+        <label><input type="checkbox" name="subject" value="Social Studies"> Social Studies</label>
+        <label><input type="checkbox" name="subject" value="Computer Science"> Computer Science</label>
+        <button type="submit" class="primary">Continue →</button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Login Section -->
+  <section class="login-container" id="login-section" style="display:none;">
+    <div class="login-box">
+      <h2>Login to LearnHub</h2>
+      <button id="back-to-home" class="back-button">← Back</button>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <div class="message" id="loginMessage"></div>
+    </div>
+  </section>
+
+  <!-- Signup Section -->
+  <section class="signup-container" id="signup-section" style="display:none;">
+    <div class="signup-box">
+      <h2>Create Your Account</h2>
+      <button id="back-to-home-signup" class="back-button">← Back</button>
+      <form id="signupForm">
+        <div class="form-group"><label>Full Name:</label><input type="text" id="name" required /></div>
+        <div class="form-group"><label>Student ID:</label><input type="text" id="studentId" required /></div>
+        <div class="form-group"><label>Email:</label><input type="email" id="signupEmail" required /></div>
+        <div class="form-group"><label>Password:</label><input type="password" id="signupPassword" required /></div>
+        <div class="form-group"><label>Confirm Password:</label><input type="password" id="confirmPassword" required /></div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <div class="message" id="signupMessage"></div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about-section" class="about-section" style="display:none;">
+    <button id="back-to-home-about" class="back-button">← Back</button>
+    <h2>About LearnHub</h2>
+    <p><strong>LearnHub</strong> is a personalized learning platform...</p>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
