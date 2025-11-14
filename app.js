@@ -1,127 +1,146 @@
-const express = require('express');
-const path = require('path');
+const express = require("express");
+const path = require("path");
+const mongoose = require("mongoose");
+const session = require("express-session");
 const app = express();
 const port = 3000;
-const mongoose = require('mongoose');
-const session = require('express-session');   // ✅ Added for session management
-const User = require('./models/user');
+const User = require("./models/user");
 
-// ✅ Connect MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/learnhub', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+mongoose.connect("mongodb://127.0.0.1:27017/learnhub")
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log(err));
 
-// ✅ Middleware
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
 
-// ✅ Session Middleware
 app.use(
   session({
-    secret: 'learnhub-secret-key',
+    secret: "learnhub-secret-key",
     resave: false,
     saveUninitialized: false,
   })
 );
 
-// ✅ Set EJS
-app.set('view engine', 'ejs');
-
-// ✅ ROUTES
-
-// Home
-app.get('/', (req, res) => {
-  res.render('index.ejs', { name: req.session.user ? req.session.user.name : null });
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  next();
 });
-
-// Signup page
-app.get('/signup', (req, res) => {
-  res.render('signup.ejs');
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect("/login");
+  next();
+}
+app.get("/", (req, res) => {
+  res.render("index.html");
 });
-
-// Login page
-app.get('/login', (req, res) => {
-  res.render('login.ejs');
+app.get("/login", (req, res) => {
+  if (req.session.user) return res.redirect("/home");
+  res.render("login");
 });
-
-// ✅ Signup route
-app.post('/user/signup', async (req, res) => {
+app.get("/signup", (req, res) => {
+  if (req.session.user) return res.redirect("/home");
+  res.render("signup");
+});
+app.post("/signup", async (req, res) => {
   const { name, studentId, email, password } = req.body;
+      
   try {
-    const newUser = new User({ name, studentId, email, password });
-    await newUser.save();
-    console.log("User registered:", newUser.email);
+      const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).send("Email already registered!");
+    }
 
-    // Store in session
-    req.session.user = newUser;
+    const existingStudentId = await User.findOne({ studentId });
+    if (existingStudentId) {
+      return res.status(400).send("Student ID already registered!");
+    }
+    const user = new User({ name, studentId, email, password });
+    await user.save();
 
-    return res.redirect('/course');
+    req.session.user = user;
+    res.redirect("/home");
   } catch (err) {
     console.log(err);
-    return res.status(500).send('Server error');
+    res.status(500).send("Signup failed");
   }
 });
-
-// ✅ Login route
-app.post('/user/login', async (req, res) => {
+ 
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email, password });
-    if (user) {
-      console.log("Login successful");
 
-      // Save user session
-      req.session.user = user;
-     res.render("index.ejs");
-    } else {
-      return res.status(400).send('Invalid email or password');
+    if (!user) {
+      return res.send("Invalid Email or Password");
     }
+
+    req.session.user = user;
+    res.redirect("/home");
   } catch (err) {
     console.log(err);
-    return res.status(500).send('Server error');
+    res.status(500).send("Login failed");
   }
 });
-
-// ✅ Course selection page (only if logged in)
+app.get("/learn", requireLogin, (req, res) => {
+  if(!req.session.user) {
+    return res.redirect('/login');
+  }
+  res.send(" Page - Under Construction");
+});
+app.get("/home", requireLogin, (req, res) => {
+  res.render("index", { user: req.session.user });
+});
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
+});
 app.get("/course", (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
-
-  res.render("course.ejs", { email: req.session.user.email });
+ const gradeRange = req.query.gradeRange;
+  res.render("course", { gradeRange });
 });
-
-// ✅ Save selected subjects
 app.post("/save-courses", async (req, res) => {
-  const { email, subjects } = req.body;
+  const { subjects, gradeRange, classNumber } = req.body;
+  const email = req.session.user.email; 
 
   try {
-    await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { email },
-      { $set: { subjects: Array.isArray(subjects) ? subjects : [subjects] } },
+      {
+        $set: {
+          subjects: Array.isArray(subjects) ? subjects : [subjects],
+          classNumber: classNumber,
+          gradeRange: gradeRange
+        }
+      },
       { new: true }
     );
 
-    console.log("Subjects saved for", email);
-    res.redirect('/');
+    req.session.user = updatedUser; 
+
+    res.redirect("/home");
+
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error saving subjects");
+    res.status(500).send("Error saving courses");
   }
 });
-
-// ✅ Logout route (optional)
-app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/login');
+ app.get("/subject", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  } 
+  res.render("subject", {
+    user: req.session.user,
+    subjects: req.session.user.subjects || []
   });
 });
-
-// ✅ Start server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

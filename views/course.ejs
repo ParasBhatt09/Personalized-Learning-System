@@ -4,35 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Select Courses</title>
+
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5fa; margin: 0; }
-    .container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #ccc; padding: 30px; }
+    body { font-family: Arial; background: #f5f5fa; }
+    .container { max-width: 450px; margin: 60px auto; background: #fff;
+      border-radius: 10px; box-shadow: 0 2px 8px #ccc; padding: 30px; }
     h2 { text-align: center; color: #7e57c2; }
-    .courses-list label { display: block; margin-bottom: 12px; font-size: 1.1em; }
-    .btn-group { text-align: center; margin-top: 20px; }
-    button { padding: 10px 20px; border: none; border-radius: 5px; margin: 0 8px; font-size: 1em; cursor: pointer; }
-    .primary { background: #7e57c2; color: #fff; }
+    label { display: block; margin-bottom: 12px; font-size: 1.1em; }
+    select { width: 100%; padding: 10px; margin: 15px 0; }
+    button { padding: 10px 20px; background: #7e57c2; color: white;
+      border-radius: 5px; border: none; cursor: pointer; width: 100%; }
+    .subjects-box { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Select Your Courses</h2>
-    <form action="/save-courses" method="POST">
-      <!-- hidden field to identify user -->
-      <input type="hidden" name="email" value="<%= email || '' %>">
 
-      <div class="courses-list">
-        <label><input type="checkbox" name="subjects" value="Mathematics"> Mathematics</label>
-        <label><input type="checkbox" name="subjects" value="Science"> Science</label>
-        <label><input type="checkbox" name="subjects" value="English"> English</label>
-        <label><input type="checkbox" name="subjects" value="Social Studies"> Social Studies</label>
-        <label><input type="checkbox" name="subjects" value="Computer Science"> Computer Science</label>
-      </div>
+<div class="container">
 
-      <div class="btn-group">
-        <button type="submit" class="primary">Save Subjects</button>
-      </div>
-    </form>
-  </div>
+  <h2>Select Your Courses</h2>
+
+  <form action="/save-courses" method="POST">
+    <input type="hidden" name="gradeRange" value="<%= gradeRange %>">
+    <label>Select Class</label>
+    <select id="classSelect" name="classNumber" required></select>
+    <div class="subjects-box" id="subjectsBox">
+    </div>
+
+    <button type="submit">Save</button>
+  </form>
+</div>
+
+<script>
+  const gradeRange = "<%= gradeRange %>";
+  const classSelect = document.getElementById("classSelect");
+  const subjectsBox = document.getElementById("subjectsBox");
+
+  // Grade-based subjects map
+  const subjectsMap = {
+    "1-3": ["Math Basics", "English Basics", "EVS"],
+    "4-6": ["Math", "Science", "English", "Computer","Social science"],
+    "7-9": ["Physics", "Chemistry", "Social science","Biology", "Math", "English","Computer"],
+    "10-12": ["Algebra","English", "Calculus", "Physics", "Chemistry", "Biology","Social science","Computer Science" ]
+  };
+
+  function loadClasses() {
+    let [start, end] = gradeRange.split("-").map(Number);
+
+    for (let i = start; i <= end; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `Class ${i}`;
+      classSelect.appendChild(opt);
+    }
+  }
+
+  function loadSubjects() {
+    subjectsBox.innerHTML = "";
+    const subjects = subjectsMap[gradeRange] || [];
+
+    subjects.forEach(sub => {
+      subjectsBox.innerHTML += `
+        <label>
+          <input type="checkbox" name="subjects" value="${sub}">
+          ${sub}
+        </label>
+      `;
+    });
+  }
+
+  // Load all dynamic content
+  loadClasses();
+  loadSubjects();
+</script>
+
 </body>
 </html>
