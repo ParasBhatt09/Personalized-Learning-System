@@ -175,6 +175,175 @@ nav a {
 
 </div>
 </main>
+<!-- Include chatbot everywhere -->
+<div id="chatbot-container">
+  <div class="chatbot">
+    <button class="chatbot-toggler">💬</button>
+<link rel="stylesheet" href="chatbot.css" />
+
+    <div class="chatbot-window">
+      <div class="chatbot-header">
+        <h3>LearnHub Assistant</h3>
+      </div>
+
+      <div class="chatbot-body" id="chat-body">
+        <div class="bot-message">
+          👋 Hi! I’m your LearnHub assistant.<br><br>
+          <b>You can ask me for YouTube study videos like:</b><br>
+          • Recommend a video for Class 5 Science<br>
+          • Show Class 10 Maths Trigonometry video<br>
+          • Video for Class 3 English grammar<br><br>
+          I'm here to help you learn! 😊
+        </div>
+      </div>
+
+      <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="Type your question..." />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatToggler = document.querySelector(".chatbot-toggler");
+    const chatWindow = document.querySelector(".chatbot-window");
+    const sendBtn = document.querySelector("#send-btn");
+    const chatBody = document.querySelector("#chat-body");
+    const userInput = document.querySelector("#user-input");
+
+    chatToggler.addEventListener("click", () => {
+      chatWindow.style.display =
+        chatWindow.style.display === "flex" ? "none" : "flex";
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // =========== SEND MESSAGE ===========
+    async function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      appendMessage(message, "user");
+      userInput.value = "";
+
+      const reply = await processMessage(message);
+      appendMessage(reply, "bot");
+
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // ADD MESSAGE TO CHAT
+    function appendMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.classList.add(sender === "user" ? "user-message" : "bot-message");
+      msg.innerHTML = text;
+      chatBody.appendChild(msg);
+    }
+
+    // =========== PROCESS USER QUERY ===========
+    async function processMessage(input) {
+      let msg = input.toLowerCase();
+
+      if (msg.includes("login")) return "Click the login button at the top.";
+      if (msg.includes("signup")) return "Use the sign up button to register.";
+      if (msg.includes("help"))
+        return "I can help with courses, login, and YouTube study videos!";
+
+      const grade = extractGrade(msg);
+      const subject = extractSubject(msg);
+
+      console.log("DETECTED → Grade:", grade, "Subject:", subject); // DEBUG
+
+      if (grade && subject) {
+        return await fetchYouTubeVideos(subject, grade);
+      }
+
+      return (
+        "I can recommend videos. Try asking:<br>" +
+        "<b>Recommend maths video for class 7</b>"
+      );
+    }
+
+    // =========== FIND GRADE ===============
+    function extractGrade(text) {
+      const match = text.match(/class\s?(\d{1,2})/);
+      return match ? match[1] : null;
+    }
+
+    // =========== FIND SUBJECT =============
+    function extractSubject(text) {
+      const subjects = [
+        "math",
+        "science",
+        "english",
+        "sst",
+        "social",
+        "physics",
+        "chemistry",
+        "bio",
+        "biology",
+        "hindi",
+      ];
+
+      for (let sub of subjects) {
+        if (text.includes(sub)) return sub;
+      }
+      return null;
+    }
+
+    // =========== YOUTUBE API CALL ===========
+    async function fetchYouTubeVideos(subject, grade) {
+      const API_KEY = "AIzaSyBGzYB903ksAQzCiB01th0id680nclTQr8"; // FIXED KEY
+      const query = `${subject} class ${grade} chapter`;
+
+      console.log("SEARCH QUERY:", query); // DEBUG
+
+      const url =
+        "https://www.googleapis.com/youtube/v3/search?part=snippet&q=" +
+        encodeURIComponent(query) +
+        "&key=" +
+        API_KEY +
+        "&type=video&maxResults=3";
+
+      try {
+        const response = await fetch(url);
+
+        console.log("API STATUS:", response.status); // DEBUG
+
+        const data = await response.json();
+        console.log("API DATA:", data); // DEBUG
+
+        if (!data.items || data.items.length === 0) {
+          return "Sorry, I couldn't find videos for that topic.";
+        }
+
+        let reply = `<b>Top YouTube Videos for ${subject.toUpperCase()} - Class ${grade}:</b><br><br>`;
+
+        data.items.forEach((video, i) => {
+          const title = video.snippet.title;
+          const videoId = video.id.videoId;
+          const link = `https://www.youtube.com/watch?v=${videoId}`;
+
+          reply += `${i + 1}. <a href="${link}" target="_blank">${title}</a><br><br>`;
+        });
+
+        return reply;
+      } catch (err) {
+        console.error("API ERROR:", err); // DEBUG
+        return (
+          "❌ Error fetching videos.<br>" +
+          "Possible reasons:<br>" +
+          "• API key restricted<br>" +
+          "• Not running on a server (use Live Server)<br>" +
+          "• YouTube API disabled<br>"
+        );
+      }
+    }
+  </script>
+</div>
 
 </body>
 <script>

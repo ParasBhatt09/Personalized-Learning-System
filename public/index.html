@@ -105,7 +105,88 @@
     </section>
 
   </main>
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnHub Assistant</title>
+  <link rel="stylesheet" href="chatbot.css" />
+</head>
+<body>
+  <!-- 💬 Chatbot -->
+  <div class="chatbot">
+    <button class="chatbot-toggler">💬</button>
+
+    <div class="chatbot-window">
+      <div class="chatbot-header">
+        <h3>LearnHub Assistant</h3>
+      </div>
+
+      <div class="chatbot-body" id="chat-body">
+        <div class="bot-message">👋 Hi! I’m your LearnHub assistant. How can I help?</div>
+      </div>
+
+      <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="Type your question..." />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📜 JavaScript -->
+  <script>
+    const chatToggler = document.querySelector('.chatbot-toggler');
+    const chatWindow = document.querySelector('.chatbot-window');
+    const sendBtn = document.querySelector('#send-btn');
+    const chatBody = document.querySelector('#chat-body');
+    const userInput = document.querySelector('#user-input');
+
+    // 💬 Toggle chatbot open/close
+    chatToggler.addEventListener('click', () => {
+      if (chatWindow.style.display === 'flex') {
+        chatWindow.style.display = 'none';
+      } else {
+        chatWindow.style.display = 'flex';
+      }
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      const userMsg = document.createElement('div');
+      userMsg.classList.add('user-message');
+      userMsg.textContent = message;
+      chatBody.appendChild(userMsg);
+
+      userInput.value = '';
+
+      const botMsg = document.createElement('div');
+      botMsg.classList.add('bot-message');
+      botMsg.textContent = getBotResponse(message);
+      chatBody.appendChild(botMsg);
+
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function getBotResponse(input) {
+      const msg = input.toLowerCase();
+
+      if (msg.includes('course')) return "You can explore courses under each subject card on the main page.";
+      if (msg.includes('login')) return "Click on the Login button in the navbar to access your account.";
+      if (msg.includes('signup')) return "Use the Sign Up button to create a new LearnHub account!";
+      if (msg.includes('help')) return "I can help you with course info, login issues, or navigation!";
+
+      return "I'm here to assist you with LearnHub-related questions 😊";
+    }
+  </script>
+
 </body>
  <script >
     function press(){
