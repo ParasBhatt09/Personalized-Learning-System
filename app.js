@@ -5,6 +5,11 @@ const session = require("express-session");
 const app = express();
 const port = 3000;
 const User = require("./models/user");
+require("dotenv").config();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 mongoose.connect("mongodb://127.0.0.1:27017/learnhub")
   .then(() => console.log("MongoDB connected"))
@@ -85,12 +90,64 @@ app.post("/login", async (req, res) => {
     res.status(500).send("Login failed");
   }
 });
-app.get("/learn", requireLogin, (req, res) => {
-  if(!req.session.user) {
-    return res.redirect('/login');
+app.get("/learn", requireLogin, async (req, res) => {
+  try {
+    const { subjects, classNumber } = req.session.user;
+
+    const YT_API_KEY = "AIzaSyBGzYB903ksAQzCiB01th0id680nclTQr8";
+
+    // Function that fetches best video for each subject
+    async function getYouTubeVideo(query) {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(
+        query
+      )}&key=${YT_API_KEY}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data.items || data.items.length === 0) {
+        return null;
+      }
+
+      const video = data.items[0];
+
+      return {
+        title: video.snippet.title,
+        url: `https://www.youtube.com/watch?v=${video.id.videoId}`
+      };
+    }
+
+    // Generate recommendations for each subject
+    const recommendations = [];
+
+    for (let sub of subjects) {
+      const query = `Best ${sub} class ${classNumber} learning video`;
+      const ytVideo = await getYouTubeVideo(query);
+
+      if (ytVideo) {
+        recommendations.push({
+          subject: sub,
+          class: classNumber,
+          youtube_links: [
+            {
+              title: ytVideo.title,
+              url: ytVideo.url
+            }
+          ],
+          notes: `Top recommended video for ${sub}`
+        });
+      }
+    }
+
+    res.render("learn", { user: req.session.user, recommendations });
+
+  } catch (error) {
+    console.log("YouTube API Error:", error);
+    res.status(500).send("Failed to fetch YouTube recommendations");
   }
-  res.send(" Page - Under Construction");
 });
+
+
 app.get("/home", requireLogin, (req, res) => {
   res.render("index", { user: req.session.user });
 });

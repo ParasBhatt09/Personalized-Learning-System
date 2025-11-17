@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Learning Recommendations</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6fc;
+      color: #2b2b2b;
+    }
+
+    .header {
+      text-align: center;
+      padding: 55px 20px;
+      background: linear-gradient(135deg, #4b79a1, #283e51);
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .header h2 {
+      font-size: 22px;
+      opacity: 0.9;
+    }
+
+    .info-box {
+      width: 90%;
+      max-width: 700px;
+      margin: 25px auto;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 18px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+      font-size: 18px;
+      line-height: 1.7;
+      border-left: 6px solid #4b79a1;
+    }
+
+    .recommendations {
+      width: 90%;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 5px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px 25px;
+      border-radius: 18px;
+      margin-bottom: 25px;
+      border-left: 6px solid #4b79a1;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin: 0;
+      color: #283e51;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 16px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .link-list {
+      margin-top: 10px;
+      padding-left: 18px;
+    }
+
+    .link-list a {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e3c72;
+      text-decoration: none;
+      overflow-wrap: break-word;
+    }
+
+    .link-list a:hover {
+      text-decoration: underline;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin: 40px auto;
+      font-size: 20px;
+      color: #283e51;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 12px 20px;
+      background: #e2e8f0;
+      width: 200px;
+      border-radius: 12px;
+      transition: 0.3s ease;
+    }
+
+    .back-link:hover {
+      background: #cbd5e1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>Hello, <%= user.name %> 👋</h1>
+    <h2>Your Personalized Learning Recommendations</h2>
+  </div>
+
+  <div class="info-box">
+    <p><strong>Class:</strong> <%= user.classNumber %></p>
+    <p><strong>Subjects:</strong> <%= user.subjects.join(", ") %></p>
+  </div>
+
+  <div class="recommendations">
+
+    <% if (Array.isArray(recommendations)) { %>
+
+      <% recommendations.forEach(item => { %>
+        <div class="card">
+          <h3><%= item.subject %> (Class <%= item.class %>)</h3>
+
+          <p><strong>Notes:</strong><br>
+            <%= item.notes.replace(/\n/g, "<br>") %>
+          </p>
+
+          <!-- Proper clickable YouTube links -->
+          <div class="link-list">
+            <% if (item.youtube_links && item.youtube_links.length > 0) { %>
+              <% item.youtube_links.forEach(link => { %>
+                <a href="<%= link.url %>" target="_blank">
+                  🎥 <%= link.title %>
+                </a>
+              <% }) %>
+            <% } %>
+          </div>
+
+        </div>
+      <% }) %>
+
+    <% } else { %>
+      <p><%= recommendations %></p>
+    <% } %>
+
+  </div>
+
+  <a class="back-link" href="/home">⬅ Back to Home</a>
+
+</body>
+</html>

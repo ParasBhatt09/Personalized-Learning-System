@@ -1,8 +1,11 @@
 {
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
-    "mongoose": "^8.19.3"
+    "mongoose": "^8.19.3",
+    "python-shell": "^5.0.0"
   }
 }
